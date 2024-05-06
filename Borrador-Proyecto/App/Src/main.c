@@ -403,14 +403,14 @@ void initSystem(void){
 	//Configuración de pines para USART1
 	//TX Pin (USART1)
 	handlerPinTX1.pGPIOx									= GPIOA;
-	handlerPinTX1.GPIO_PinConfig.GPIO_PinNumber				= PIN_9;
+	handlerPinTX1.GPIO_PinConfig.GPIO_PinNumber				= PIN_2;
 	handlerPinTX1.GPIO_PinConfig.GPIO_PinMode				= GPIO_MODE_ALTFN;
 	handlerPinTX1.GPIO_PinConfig.GPIO_PinAltFunMode			= AF7;
 	GPIO_Config(&handlerPinTX1);
 
 	//RX Pin (USART1)
 	handlerPinRX1.pGPIOx									= GPIOA;
-	handlerPinRX1.GPIO_PinConfig.GPIO_PinNumber				= PIN_10;
+	handlerPinRX1.GPIO_PinConfig.GPIO_PinNumber				= PIN_3;
 	handlerPinRX1.GPIO_PinConfig.GPIO_PinMode				= GPIO_MODE_ALTFN;
 	handlerPinRX1.GPIO_PinConfig.GPIO_PinAltFunMode			= AF7;
 	GPIO_Config(&handlerPinRX1);
@@ -424,7 +424,7 @@ void initSystem(void){
 	GPIO_Config(&handlerPinRX6);
 
 	//Configuración de la comunicación serial USART1
-	handlerUsart1.ptrUSARTx	 								= USART1;
+	handlerUsart1.ptrUSARTx	 								= USART2;
 	handlerUsart1.USART_Config.USART_baudrate				= USART_BAUDRATE_9600;
 	handlerUsart1.USART_Config.USART_PLL_EN					= PLL_DISABLE;
 	handlerUsart1.USART_Config.USART_datasize				= USART_DATASIZE_8BIT;

@@ -109,7 +109,7 @@ unsigned long B4 = 0;
 unsigned long B7 = 0;
 
 //Definiciones para comunicación I2C (ACCEL)
-#define ACCEL_ADDRESS 	0b1101001;		//ID Device
+#define ACCEL_ADDRESS 	0x68;		//ID Device
 #define ACCEL_XOUT_H	59 				//0x3B
 #define ACCEL_XOUT_L 	60 				//0x3C
 #define ACCEL_YOUT_H	61				//0x3D
@@ -142,10 +142,6 @@ long getPress(void);
 void parseCommands(char *ptrBufferReception);
 
 int main(void){
-
-	//Calibración del HSI
-	RCC->CR &= ~RCC_CR_HSITRIM;
-	RCC->CR |= (13 << RCC_CR_HSITRIM_Pos);
 
 	//Activación del coprocesador matemático
 	SCB->CPACR |= (0xF << 20);
@@ -207,6 +203,9 @@ int main(void){
 		if(dataOn == 1){
 
 			if(flagData == 1){
+
+				//Se cargan los datos de calibración correspondientes al Accel
+				calibrationDataAcc();
 
 				//Accel X
 				sprintf(bufferData, "\nAceleración X: %.2f m/s²", ((float)AccelX*converFactAcc)-0.54);
@@ -403,14 +402,14 @@ void initSystem(void){
 	//Configuración de pines para USART1
 	//TX Pin (USART1)
 	handlerPinTX1.pGPIOx									= GPIOA;
-	handlerPinTX1.GPIO_PinConfig.GPIO_PinNumber				= PIN_9;
+	handlerPinTX1.GPIO_PinConfig.GPIO_PinNumber				= PIN_2;
 	handlerPinTX1.GPIO_PinConfig.GPIO_PinMode				= GPIO_MODE_ALTFN;
 	handlerPinTX1.GPIO_PinConfig.GPIO_PinAltFunMode			= AF7;
 	GPIO_Config(&handlerPinTX1);
 
 	//RX Pin (USART1)
 	handlerPinRX1.pGPIOx									= GPIOA;
-	handlerPinRX1.GPIO_PinConfig.GPIO_PinNumber				= PIN_10;
+	handlerPinRX1.GPIO_PinConfig.GPIO_PinNumber				= PIN_3;
 	handlerPinRX1.GPIO_PinConfig.GPIO_PinMode				= GPIO_MODE_ALTFN;
 	handlerPinRX1.GPIO_PinConfig.GPIO_PinAltFunMode			= AF7;
 	GPIO_Config(&handlerPinRX1);
@@ -424,7 +423,7 @@ void initSystem(void){
 	GPIO_Config(&handlerPinRX6);
 
 	//Configuración de la comunicación serial USART1
-	handlerUsart1.ptrUSARTx	 								= USART1;
+	handlerUsart1.ptrUSARTx	 								= USART2;
 	handlerUsart1.USART_Config.USART_baudrate				= USART_BAUDRATE_9600;
 	handlerUsart1.USART_Config.USART_PLL_EN					= PLL_DISABLE;
 	handlerUsart1.USART_Config.USART_datasize				= USART_DATASIZE_8BIT;
@@ -684,7 +683,7 @@ long getPress(void){
 	return P;
 }
 
-void usart1Rx_Callback(void){
+void usart2Rx_Callback(void){
 	//Leemos el valor del registro DR, donde se almacena el dato que llega.
 	rxData = getRxData();
 }
