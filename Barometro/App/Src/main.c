@@ -109,7 +109,7 @@ unsigned long B4 = 0;
 unsigned long B7 = 0;
 
 //Definiciones para comunicación I2C (ACCEL)
-#define ACCEL_ADDRESS 	0b1101001;		//ID Device
+#define ACCEL_ADDRESS 	0x68;		//ID Device
 #define ACCEL_XOUT_H	59 				//0x3B
 #define ACCEL_XOUT_L 	60 				//0x3C
 #define ACCEL_YOUT_H	61				//0x3D
@@ -143,9 +143,7 @@ void parseCommands(char *ptrBufferReception);
 
 int main(void){
 
-	//Calibración del HSI
-	RCC->CR &= ~RCC_CR_HSITRIM;
-	RCC->CR |= (13 << RCC_CR_HSITRIM_Pos);
+
 
 	//Activación del coprocesador matemático
 	SCB->CPACR |= (0xF << 20);
@@ -233,7 +231,6 @@ int main(void){
 				writeMsg(&handlerUsart1, bufferData);
 
 				//Presión
-				sprintf(bufferData, "\nPresión: %.2f hPa", (float)Press);
 				writeMsg(&handlerUsart1, bufferData);
 
 				//Temperatura
@@ -475,7 +472,7 @@ void BMP085(void){
 	/* El dispositivo entrega por defecto el valor en Pa, para hacer la conversión
 	 * a hPa solo se debe dividir la medida entre 100
 	 */
-	Press = (getPress()/100);
+	Press = (getPress());
 }
 
 void MPU6050(void){
@@ -613,8 +610,8 @@ void calibrationDataAcc(void){
 //Función que entrega la temperatura final ya calibrada
 long getTemp(void){
 
-	X1 = ((UT-AC6)*AC5)/(32768);
-	X2 = (MC*(2048))/(X1 + MD);
+	X1 = (UT-AC6) * AC5 / 32768;
+	X2 = MC*(2048) / (X1 + MD);
 	B5 = X1 + X2;
 	T = (B5 + 8)/(16);
 	return T;
@@ -628,7 +625,7 @@ long getPress(void){
 	X1 = (B2 * (B6 * B6/(4096))) / (2048);
 	X2 = (AC2 * B6) / (2048);
 	X3 = X1 + X2;
-	B3 = (((AC1*4)+(X3 << oss)) + 2)/4;
+	B3 = (((AC1*4+X3) << oss) + 2) / 4 ;
 	X1 = (AC3 * B6) / (8192);
 	X2 = (B1 * (B6 * B6 / (4096)))/(65536);
 	X3 = ((X1+X2)+2) / (4) ;
@@ -642,15 +639,24 @@ long getPress(void){
 		p = (B7/B4) * 2;
 	}
 
+	/*
+	 * Se debe analizar el siguiente cuadro de codigo
+	 */
+
 	X1 = (p >> 8) * (p >> 8);
 	X1 = (X1 * 3038) >> 16;
 	X2 = (-7357 * p) >> 16;
 	P = p + (X1 + X2 + 3791)/(16);
 
+//	X1 = (p/256)* (p/256);
+//	X1 = (X1 * 3038) / 65536;
+//	X2 = (-7357*p) / 65536;
+//	p = p + (X1 + X2 + 3791) / 16;
+
 	return P;
 }
 
-void usart1Rx_Callback(void){
+void usart2Rx_Callback(void){
 	//Leemos el valor del registro DR, donde se almacena el dato que llega.
 	rxData = getRxData();
 }
