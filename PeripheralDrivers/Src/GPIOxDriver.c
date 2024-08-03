@@ -152,10 +152,10 @@ void GPIO_WritePin (GPIO_Handler_t *pPinHandler, uint8_t newState){
  *
  */
 
-uint32_t GPIO_ReadPin(GPIO_Handler_t *pPinHandler){
+uint8_t GPIO_ReadPin(GPIO_Handler_t *pPinHandler){
 
 	//Creamos una variable auxiliar la cual luego reotrnaremos
-	uint32_t pinValue = 0;
+	uint8_t pinValue = 0;
 
 	/*Cargamos el valor del registro IDR, desplazado a la derecha tantas veces como
 	 * la ubicacion del pin especifico*/
