@@ -92,7 +92,7 @@ typedef struct
 
 void GPIO_Config (GPIO_Handler_t *pGPIOHandler);
 void GPIO_WritePin(GPIO_Handler_t *pPinHandler, uint8_t newState);
-uint32_t GPIO_ReadPin(GPIO_Handler_t *pPinHandler);
+uint8_t GPIO_ReadPin(GPIO_Handler_t *pPinHandler);
 void GPIOxTooglePin(GPIO_Handler_t *ptrPinHandler);
 
 
